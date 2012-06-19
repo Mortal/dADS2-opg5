@@ -90,11 +90,21 @@ struct trie {
 	}
 };
 
-template <typename Payload>
+struct depth_payload {
+	size_t depth;
+};
+
+struct suffix_payload : public depth_payload {
+	bool is_orig;
+	bool is_rev;
+};
+
 struct depth_calc {
+	template <typename Payload>
 	void operator()(trie<Payload> & t) {
-		if (t.root) t.payload.depth = 0;
-		else t.payload.depth = t.parent->payload.depth + 1;
+		depth_payload & pl = static_cast<depth_payload &>(t.payload);
+		if (t.root) pl.depth = 0;
+		else pl.depth = t.parent->payload.depth + 1;
 	}
 };
 

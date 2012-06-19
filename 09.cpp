@@ -1,16 +1,10 @@
 #include "suffix.h"
 
-struct lsr_payload {
-	bool is_orig;
-	bool is_rev;
-	size_t depth;
-};
-
 struct lsr_calc {
 	static const char END1 = '$';
 	static const char END2 = '#';
 
-	void operator()(trie<lsr_payload> & t) {
+	void operator()(trie<suffix_payload> & t) {
 		t.payload.is_orig = false;
 		t.payload.is_rev = false;
 		if (t.ch == END1) {
@@ -38,7 +32,7 @@ struct lsr_calc {
 };
 
 struct longest_substring_reversed {
-	trie<lsr_payload> t;
+	trie<suffix_payload> t;
 
 	static const char END1 = lsr_calc::END1;
 	static const char END2 = lsr_calc::END2;
@@ -49,7 +43,7 @@ struct longest_substring_reversed {
 	}
 
 	void calc() {
-		t.pre_order_traversal(depth_calc<lsr_payload>());
+		t.pre_order_traversal(depth_calc());
 		t.post_order_traversal(lsr_calc());
 	}
 };
