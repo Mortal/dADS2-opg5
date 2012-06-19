@@ -1,9 +1,9 @@
 CXXFLAGS=-std=gnu++0x -Wall -Wextra
 
-all: suffix
+all: 09
 
-suffix: suffix.cpp
+09: 09.cpp suffix.h
 	$(CXX) $(CXXFLAGS) -o $@ $<
 
 clean:
-	$(RM) suffix
+	$(RM) 09
