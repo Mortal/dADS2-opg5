@@ -31,6 +31,12 @@ struct trie {
 		child.insert(str, off+1);
 	}
 
+	void insert_suffixes(const string & s) {
+		for (size_t i = 0; i < s.size(); ++i) {
+			insert(s, i);
+		}
+	}
+
 	template <typename F>
 	void post_order_traversal(F f) {
 		for (auto i = children.begin(); i != children.end(); ++i) {
@@ -62,6 +68,25 @@ struct trie {
 			n = n->parent;
 		}
 		return res;
+	}
+
+	void dump(ostream & out) {
+		if (children.size() == 0) {
+			out << ch;
+			return;
+		}
+		if (children.size() == 1) {
+			out << ch;
+			return children.begin()->second.dump(out);
+		}
+		out << ch;
+		char c = '[';
+		for (auto i = children.begin(); i != children.end(); ++i) {
+			out << c;
+			i->second.dump(out);
+			c = ' ';
+		}
+		out << ']';
 	}
 };
 
@@ -116,19 +141,8 @@ struct longest_substring_reversed {
 	static const char END2 = lsr_calc::END2;
 
 	void set_string(string s) {
-		string insert(s.size()*2+2, '\0');
-		for (size_t i = 0; i < s.size(); ++i) {
-			char ch = s[i];
-			if (ch == END1 || ch == END2)
-				cerr << "End-of-string marker \"" << ch << "\" occurs in input, result is incorrect" << endl;
-			insert[i] = insert[2*s.size()-i] = ch;
-		}
-		insert[s.size()] = END1;
-		insert[2*s.size()+1] = END2;
-
-		for (size_t i = 0; i < insert.size(); ++i) {
-			t.insert(insert, i);
-		}
+		t.insert_suffixes(s + END1);
+		t.insert_suffixes(string(s.rbegin(), s.rend()) + END2);
 	}
 
 	void calc() {
@@ -141,6 +155,8 @@ int main(int argc, char ** argv) {
 	for (int i = 1; i < argc; ++i) {
 		longest_substring_reversed l;
 		l.set_string(argv[i]);
+		l.t.dump(cout);
+		cout << endl;
 		l.calc();
 	}
 	return 0;
